@@ -74,7 +74,7 @@ public class BroadcastActivity extends ActionBarActivity implements View.OnClick
   @Override
   public boolean onCreateOptionsMenu(Menu menu) {
     // Inflate the menu; this adds items to the action bar if it is present.
-    getMenuInflater().inflate(R.menu.menu_main, menu);
+    getMenuInflater().inflate(R.menu.menu_broadcast, menu);
     return true;
   }
 
@@ -89,11 +89,10 @@ public class BroadcastActivity extends ActionBarActivity implements View.OnClick
     // as you specify a parent activity in AndroidManifest.xml.
     int id = item.getItemId();
     switch (id) {
-      case R.id.menu_change_store_id:
-        // TODO: open popup menu to change store id
+      case R.id.action_settings:
         return true;
 
-      case R.id.action_settings:
+      case R.id.menu_goto_POS:  // "Go To POS System" menu item clicked
         return true;
     }
 

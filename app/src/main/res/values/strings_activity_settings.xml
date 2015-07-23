@@ -2,7 +2,8 @@
   <string name="title_activity_settings">Settings</string>
 
   <!-- Strings related to Settings -->
-  <string name="static_change_store_id">Change Store ID</string>
+  <string name="static_goto_POS">Go To POS System</string>
+  <string name="static_goto_BROADCAST">Go To Broadcast System</string>
 
 
 

@@ -42,13 +42,10 @@ public class PointOfSaleActivity extends ActionBarActivity {
       case R.id.action_settings:  // settings item clicked
         return true;
 
-      case R.id.
+      case R.id.menu_goto_BROADCAST:  // "Go To POS System" menu item clicked
+        return true;
     }
 
-    //noinspection SimplifiableIfStatement
-    if (id == R.id.action_settings) {
-      return true;
-    }
 
     return super.onOptionsItemSelected(item);
   }
