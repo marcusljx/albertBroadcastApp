@@ -115,6 +115,14 @@ public class BroadcastActivity extends ActionBarActivity implements View.OnClick
   }
 
   @Override
+  public boolean onPrepareOptionsMenu(Menu menu) {
+    MenuItem item= menu.findItem(R.id.action_settings);
+    item.setVisible(false);
+    super.onPrepareOptionsMenu(menu);
+    return true;
+  }
+
+  @Override
   public boolean onCreateOptionsMenu(Menu menu) {
     // Inflate the menu; this adds items to the action bar if it is present.
     getMenuInflater().inflate(R.menu.menu_broadcast, menu);
@@ -238,9 +246,7 @@ public class BroadcastActivity extends ActionBarActivity implements View.OnClick
   // Social Media Buttons
   public void toggleFBButton(View view) {
     ImageButton fbButton = (ImageButton) findViewById(R.id.socialButton_fb);
-    ColorDrawable current_color = (ColorDrawable) fbButton.getBackground();
-    int colorID = current_color.getColor();
-    if(fb_tog == false) {
+    if(!fb_tog) {
       fbButton.setBackgroundColor(getResources().getColor(R.color.pop));
       fb_tog = true;
     } else {
@@ -250,8 +256,7 @@ public class BroadcastActivity extends ActionBarActivity implements View.OnClick
   }
   public void toggleIGButton(View view) {
     ImageButton igButton = (ImageButton) findViewById(R.id.socialButton_ig);
-
-    if(ig_tog == false) {
+    if(!ig_tog) {
       igButton.setBackgroundColor(getResources().getColor(R.color.pop));
       ig_tog = true;
     } else {
@@ -260,7 +265,7 @@ public class BroadcastActivity extends ActionBarActivity implements View.OnClick
   }
   public void toggleTWButton(View view) {
     ImageButton twButton = (ImageButton) findViewById(R.id.socialButton_tw);
-    if(tw_tog == false) {
+    if(!tw_tog) {
       twButton.setBackgroundColor(getResources().getColor(R.color.pop));
       tw_tog = true;
     } else {

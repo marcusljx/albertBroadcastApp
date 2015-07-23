@@ -52,6 +52,14 @@ public class PointOfSaleActivity extends ActionBarActivity {
   }
 
   @Override
+  public boolean onPrepareOptionsMenu(Menu menu) {
+    MenuItem item= menu.findItem(R.id.action_settings);
+    item.setVisible(false);
+    super.onPrepareOptionsMenu(menu);
+    return true;
+  }
+
+  @Override
   public boolean onCreateOptionsMenu(Menu menu) {
     // Inflate the menu; this adds items to the action bar if it is present.
     getMenuInflater().inflate(R.menu.menu_point_of_sale, menu);
@@ -92,7 +100,10 @@ public class PointOfSaleActivity extends ActionBarActivity {
     payment.setCurrency(Currency.getInstance("USD"));
 
     // Launch the Payment app.
+//    Toast.makeText(this, "Attempting to start payments app1...", Toast.LENGTH_LONG).show();
     startActivityForResult(payment.createIntent(), 0);
+
+//    Toast.makeText(this, "Attempting to start payments app2...", Toast.LENGTH_LONG).show();
   }
 
   @Override
