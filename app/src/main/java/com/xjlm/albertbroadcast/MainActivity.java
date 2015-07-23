@@ -10,6 +10,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.parse.GetCallback;
 import com.parse.Parse;
@@ -36,7 +37,6 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
   ParseObject parse_agent;
 
   // Parse Server Items
-  String ShopName = "CheapAsChips-branch04";
   String ParseServerObjID = "xFrTor9FsW";
 
 
@@ -99,43 +99,42 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
 
 
 
-//      ParseObject testObject = new ParseObject("Broadcasts");
-//      testObject.put("MerchantID", MerchantID);
-//      testObject.put("DateTimeString", dateTimeString);
-//      testObject.put("BroadcastMessageString", broadcastMessage);
-//      testObject.saveInBackground();
-//      Log.d("Parse", "Attempted Save in Background");
-
       // Query Server for Store entry
       final ParseQuery<ParseObject> query = ParseQuery.getQuery("Store");
       query.getInBackground(ParseServerObjID, new GetCallback<ParseObject>() {
         public void done(ParseObject object, ParseException e) {
-          if (e == null) {
+          if (e == null) { //Success
+            String ShopName = object.getString("name");
+
             // Update "Specials" Entry
             object.put("specials", broadcastMessage);
             object.saveInBackground();
             Log.d("Parse", "Attempted updating Parse server entry.");
+
+            // Create JSON Notification Object
+            JSONObject notifObject = new JSONObject();
+            try {
+              notifObject.put("action", "ShopDetailsActivity");
+              notifObject.put("shop", ParseServerObjID);
+              notifObject.put("alert", broadcastMessage);
+              notifObject.put("title", ShopName);
+            } catch (JSONException je) {
+              je.printStackTrace();
+            }
+            // Send Push Notification to Parse Channel
+            ParsePush push = new ParsePush();
+            push.setChannel("");
+            push.setData(notifObject);
+            push.sendInBackground();
+
+
           } else {
             Log.d("Parse", "Error attempting to update Parse Server Entry");
           }
         }
       });
 
-      // Create JSON Notification Object
-      JSONObject notifObject = new JSONObject();
-      try {
-        notifObject.put("action", "ShopDetailsActivity");
-        notifObject.put("shop", ParseServerObjID);
-        notifObject.put("alert", broadcastMessage);
-        notifObject.put("title", ShopName);
-      } catch (JSONException e) {
-        e.printStackTrace();
-      }
-      // Send Push Notification to Parse Channel
-      ParsePush push = new ParsePush();
-      push.setChannel("");
-      push.setData(notifObject);
-      push.sendInBackground();
+
 
 
       // Clear the Broadcast Message Edit Text field
