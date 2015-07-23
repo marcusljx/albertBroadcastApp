@@ -18,6 +18,9 @@ import com.parse.ParseObject;
 import com.parse.ParsePush;
 import com.parse.ParseQuery;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -33,7 +36,7 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
   ParseObject parse_agent;
 
   // Parse Server Items
-  String StoreID = "CheapAsChips-branch04";
+  String ShopName = "CheapAsChips-branch04";
   String ParseServerObjID = "xFrTor9FsW";
 
 
@@ -118,10 +121,20 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
         }
       });
 
+      // Create JSON Notification Object
+      JSONObject notifObject = new JSONObject();
+      try {
+        notifObject.put("action", "ShopDetailsActivity");
+        notifObject.put("shop", ParseServerObjID);
+        notifObject.put("alert", broadcastMessage);
+        notifObject.put("title", ShopName);
+      } catch (JSONException e) {
+        e.printStackTrace();
+      }
       // Send Push Notification to Parse Channel
       ParsePush push = new ParsePush();
       push.setChannel("");
-      push.setMessage(broadcastMessage);
+      push.setData(notifObject);
       push.sendInBackground();
 
 

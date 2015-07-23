@@ -21,7 +21,7 @@
 
 
     <meta-data android:name="ip-addresses" android:value="0.0.0.0/0" />
-
+    <meta-data android:name="application-type" android:value="vaa_merchant"/>
 
     <application
         android:name="com.xjlm.albertbroadcast.ParseApplication"
