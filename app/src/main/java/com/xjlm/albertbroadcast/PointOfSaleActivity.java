@@ -1,28 +1,83 @@
 package com.xjlm.albertbroadcast;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 
+import com.aevi.helpers.services.AeviServiceConnectionCallback;
+import com.aevi.led.LedPhase;
+import com.aevi.led.LedSequenceParams;
+import com.aevi.led.LedService;
+import com.aevi.led.LedServiceProvider;
 import com.aevi.payment.PaymentRequest;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.Currency;
 
+import au.com.commbank.albert.merchantmenu.MerchantMenu;
+import au.com.commbank.albert.merchantmenu.MerchantMenuBundle;
+import au.com.commbank.albert.merchantmenu.MerchantMenuItem;
+import au.com.commbank.albert.merchantmenu.events.OnMerchantMenuEventListener;
+import au.com.commbank.albert.merchantmenu.events.OnMerchantMenuItemClickListener;
 
-public class PointOfSaleActivity extends ActionBarActivity {
+
+public class PointOfSaleActivity extends ActionBarActivity implements OnMerchantMenuEventListener, OnMerchantMenuItemClickListener {
 
   EditText g_payAmount;
+
+  // MERCHANT MENU
+  private MerchantMenu merchantMenu;
+  private LedService ledService;
+  private LedServiceProvider ledServiceProvider;
+  private LedSequenceParams ledSequenceParams;
+  private LedPhase[] ledPhases;
+  private final int TRANSPARENT_RATE= 200;
+  private final int RED_RATE= 333;
+  private final int NUM_PHASES= 8;
+
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_point_of_sale);
+
+    //Initialise the merchant menu
+    if (savedInstanceState!= null
+        &&savedInstanceState
+        .containsKey(MerchantMenu.MERCHANT_MENU_BUNDLE_KEY)){
+      merchantMenu= new MerchantMenu(
+          this,
+          (MerchantMenuBundle)savedInstanceState
+              .getParcelable(MerchantMenu.MERCHANT_MENU_BUNDLE_KEY));
+    } else {
+      merchantMenu = new MerchantMenu(this);
+    }
+
+    //Setup LEDs
+    ledServiceProvider= new LedServiceProvider(this);
+    ledPhases= new LedPhase[NUM_PHASES];
+    for (int i= 0; i < NUM_PHASES; ) {
+      ledPhases[i++]= new LedPhase(Color.TRANSPARENT, TRANSPARENT_RATE);
+      ledPhases[i++]= new LedPhase(Color.RED, RED_RATE);
+    }
+    ledSequenceParams= new LedSequenceParams(false, true);
+
+    ledServiceProvider.connect(new AeviServiceConnectionCallback<LedService>(){
+      @Override
+      public void onConnect(LedService service) {
+        ledService= service;
+      }
+    });
+
+    merchantMenu.setOnMerchantMenuEventListener(this);
+    MerchantMenuItem item = merchantMenu.addMerchantMenuItem("Go To Broadcast", R.id.image, 1);
   }
 
   @Override
@@ -85,5 +140,44 @@ public class PointOfSaleActivity extends ActionBarActivity {
   public void goto_broadcast(MenuItem mi) {
     Intent intent = new Intent(this, BroadcastActivity.class);
     startActivity(intent);
+  }
+
+
+
+  //=================MERCHANT MENU SECTION
+  @Override
+  protected  void  onDestroy(){
+    merchantMenu.unregisterMerchantMenu();
+    super.onDestroy();
+  }
+
+  public boolean onKeyDown(int keyCode, KeyEvent event) {
+    if ((keyCode == KeyEvent.KEYCODE_MENU)
+        && event.getAction() == KeyEvent.ACTION_DOWN) {
+      merchantMenu.requestMerchantMenu();
+      return true;
+    }
+    return super.onKeyDown(keyCode, event);
+  }
+
+  @Override
+  protected void onSaveInstanceState(Bundle outState) {
+    outState.putParcelable(MerchantMenu.MERCHANT_MENU_BUNDLE_KEY,
+        merchantMenu.getMerchantMenuState());
+    super.onSaveInstanceState(outState);
+  }
+
+  @Override
+  public void onMerchantMenuOpened(){
+    ledService.setLedSequence(ledPhases,ledSequenceParams);
+  }
+  @Override
+  public void onMerchantMenuClosed(){
+    ledService.cancel();
+  }
+
+  @Override
+  public void onMerchantMenuItemClicked(MerchantMenuItem menuItem){
+    //Respond here
   }
 }

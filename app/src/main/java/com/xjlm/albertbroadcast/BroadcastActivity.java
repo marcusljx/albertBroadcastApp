@@ -1,6 +1,7 @@
 package com.xjlm.albertbroadcast;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.support.v7.app.ActionBarActivity;
@@ -17,6 +18,11 @@ import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.aevi.helpers.services.AeviServiceConnectionCallback;
+import com.aevi.led.LedPhase;
+import com.aevi.led.LedSequenceParams;
+import com.aevi.led.LedService;
+import com.aevi.led.LedServiceProvider;
 import com.parse.GetCallback;
 import com.parse.Parse;
 import com.parse.ParseException;
@@ -31,8 +37,14 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 
+import au.com.commbank.albert.merchantmenu.MerchantMenu;
+import au.com.commbank.albert.merchantmenu.MerchantMenuBundle;
+import au.com.commbank.albert.merchantmenu.MerchantMenuItem;
+import au.com.commbank.albert.merchantmenu.events.OnMerchantMenuEventListener;
+import au.com.commbank.albert.merchantmenu.events.OnMerchantMenuItemClickListener;
 
-public class BroadcastActivity extends ActionBarActivity implements View.OnClickListener, EditText.OnEditorActionListener {
+
+public class BroadcastActivity extends ActionBarActivity implements View.OnClickListener, EditText.OnEditorActionListener, OnMerchantMenuEventListener, OnMerchantMenuItemClickListener {
 
   Button broadcastButton;
   EditText broadcastEditText;
@@ -49,11 +61,55 @@ public class BroadcastActivity extends ActionBarActivity implements View.OnClick
   Boolean ig_tog = false;
   Boolean tw_tog = false;
 
+  // MERCHANT MENU
+  private MerchantMenu merchantMenu;
+  private LedService ledService;
+  private LedServiceProvider ledServiceProvider;
+  private LedSequenceParams ledSequenceParams;
+  private LedPhase[] ledPhases;
+  private final int TRANSPARENT_RATE= 200;
+  private final int RED_RATE= 333;
+  private final int NUM_PHASES= 8;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_broadcast);
+
+    //Initialise the merchant menu
+    if (savedInstanceState!= null
+        &&savedInstanceState
+        .containsKey(MerchantMenu.MERCHANT_MENU_BUNDLE_KEY)){
+      merchantMenu= new MerchantMenu(
+          this,
+          (MerchantMenuBundle)savedInstanceState
+              .getParcelable(MerchantMenu.MERCHANT_MENU_BUNDLE_KEY));
+    } else {
+      merchantMenu = new MerchantMenu(this);
+    }
+    //Setup LEDs
+    ledServiceProvider= new LedServiceProvider(this);
+    ledPhases= new LedPhase[NUM_PHASES];
+    for (int i= 0; i < NUM_PHASES; ) {
+      ledPhases[i++]= new LedPhase(Color.TRANSPARENT, TRANSPARENT_RATE);
+      ledPhases[i++]= new LedPhase(Color.RED, RED_RATE);
+    }
+    ledSequenceParams= new LedSequenceParams(false, true);
+
+    ledServiceProvider.connect(new AeviServiceConnectionCallback<LedService>(){
+      @Override
+      public void onConnect(LedService service) {
+        ledService= service;
+      }
+    });
+
+    merchantMenu.setOnMerchantMenuEventListener(this);
+
+
+
+
+
+
 
     // Retrieve Store Name
     final String local_storeID = ((ParseApplication) this.getApplication()).get_StoreID();  // get from global
@@ -248,5 +304,43 @@ public class BroadcastActivity extends ActionBarActivity implements View.OnClick
       twButton.setBackgroundColor(getResources().getColor(R.color.grey));
       tw_tog = false;
     }
+  }
+
+
+  //=================MERCHANT MENU SECTION
+  @Override
+  protected  void  onDestroy(){
+    merchantMenu.unregisterMerchantMenu();
+    super.onDestroy();
+  }
+
+  public boolean onKeyDown(int keyCode, KeyEvent event) {
+    if ((keyCode == KeyEvent.KEYCODE_MENU)
+        && event.getAction() == KeyEvent.ACTION_DOWN) {
+      merchantMenu.requestMerchantMenu();
+      return true;
+    }
+    return super.onKeyDown(keyCode, event);
+  }
+
+  @Override
+  protected void onSaveInstanceState(Bundle outState) {
+    outState.putParcelable(MerchantMenu.MERCHANT_MENU_BUNDLE_KEY,
+        merchantMenu.getMerchantMenuState());
+    super.onSaveInstanceState(outState);
+  }
+
+  @Override
+  public void onMerchantMenuOpened(){
+    ledService.setLedSequence(ledPhases, ledSequenceParams);
+  }
+  @Override
+  public void onMerchantMenuClosed(){
+    ledService.cancel();
+  }
+
+  @Override
+  public void onMerchantMenuItemClicked(MerchantMenuItem menuItem){
+    //Respond here
   }
 }
