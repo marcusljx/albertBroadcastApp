@@ -3,6 +3,7 @@ package com.xjlm.albertbroadcast;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -10,10 +11,9 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
-import android.widget.Toast;
+import android.widget.TextView;
 
 import com.parse.GetCallback;
-import com.parse.Parse;
 import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParsePush;
@@ -27,7 +27,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 
 
-public class MainActivity extends ActionBarActivity implements View.OnClickListener {
+public class MainActivity extends ActionBarActivity implements View.OnClickListener, EditText.OnEditorActionListener {
 
   Button broadcastButton;
   EditText broadcastEditText;
@@ -37,8 +37,10 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
   ParseObject parse_agent;
 
   // Parse Server Items
-  String ParseServerObjID = "xFrTor9FsW";
+  String StoreID = "xFrTor9FsW";
 
+  EditText storeID_EditText;
+  TextView storeName_TextView;
 
 
   @Override
@@ -46,7 +48,15 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_main);
 
+    //Listen to store id edittext field
+    storeID_EditText = (EditText) findViewById(R.id.edittext_store_id);
+    storeID_EditText.setOnEditorActionListener(this);
+
+    storeName_TextView = (TextView) findViewById(R.id.text_store_name);
+
+    // Broadcast
     broadcastEditText = (EditText) findViewById(R.id.broadcast_message_edit_text);
+
 
     // Broadcast Button Listener
     broadcastButton = (Button) findViewById(R.id.create_message_broadcast);
@@ -68,16 +78,23 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
     return true;
   }
 
+  public void checkStoreID() {
+
+  }
+
   @Override
   public boolean onOptionsItemSelected(MenuItem item) {
     // Handle action bar item clicks here. The action bar will
     // automatically handle clicks on the Home/Up button, so long
     // as you specify a parent activity in AndroidManifest.xml.
     int id = item.getItemId();
+    switch (id) {
+      case R.id.menu_change_store_id:
+        // TODO: open popup menu to change store id
+        return true;
 
-    //noinspection SimplifiableIfStatement
-    if (id == R.id.action_settings) {
-      return true;
+      case R.id.action_settings:
+        return true;
     }
 
     return super.onOptionsItemSelected(item);
@@ -101,7 +118,7 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
 
       // Query Server for Store entry
       final ParseQuery<ParseObject> query = ParseQuery.getQuery("Store");
-      query.getInBackground(ParseServerObjID, new GetCallback<ParseObject>() {
+      query.getInBackground(StoreID, new GetCallback<ParseObject>() {
         public void done(ParseObject object, ParseException e) {
           if (e == null) { //Success
             String ShopName = object.getString("name");
@@ -115,7 +132,7 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
             JSONObject notifObject = new JSONObject();
             try {
               notifObject.put("action", "ShopDetailsActivity");
-              notifObject.put("shop", ParseServerObjID);
+              notifObject.put("shop", StoreID);
               notifObject.put("alert", broadcastMessage);
               notifObject.put("title", ShopName);
             } catch (JSONException je) {
@@ -140,5 +157,29 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
       // Clear the Broadcast Message Edit Text field
       broadcastEditText.setText("");
     }
+  }
+
+  @Override
+  public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+    storeName_TextView.setText("Searching Database...");
+    StoreID = storeID_EditText.getText().toString();
+
+    ParseQuery<ParseObject> query = ParseQuery.getQuery("Store");
+    query.getInBackground(StoreID, new GetCallback<ParseObject>() {
+      public void done(ParseObject object, ParseException e) {
+        if (e == null) { //Success
+          String ShopName = object.getString("name");
+          storeName_TextView.setText("Store: " + ShopName);
+          storeID_EditText.setText("");
+        } else {
+          storeName_TextView.setText("ERROR: StoreID not found. Broadcasts will not be delivered.");
+          Log.d("Parse", "Error attempting to check StoreID");
+          storeID_EditText.setText(StoreID);
+        }
+      }
+    });
+
+
+    return false;
   }
 }

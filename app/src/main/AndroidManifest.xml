@@ -15,16 +15,21 @@
       to match your app's package name + ".permission.C2D_MESSAGE".
     -->
 
-    <permission android:protectionLevel="signature"
-                android:name="com.xjlm.albertbroadcast.permission.C2D_MESSAGE" />
+    <permission
+        android:name="com.xjlm.albertbroadcast.permission.C2D_MESSAGE"
+        android:protectionLevel="signature" />
+
     <uses-permission android:name="com.xjlm.albertbroadcast.permission.C2D_MESSAGE" />
 
-
-    <meta-data android:name="ip-addresses" android:value="0.0.0.0/0" />
-    <meta-data android:name="application-type" android:value="vaa_merchant"/>
+    <meta-data
+        android:name="ip-addresses"
+        android:value="0.0.0.0/0" />
+    <meta-data
+        android:name="application-type"
+        android:value="vaa_merchant" />
 
     <application
-        android:name="com.xjlm.albertbroadcast.ParseApplication"
+        android:name=".ParseApplication"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
@@ -39,44 +44,48 @@
             </intent-filter>
         </activity>
 
-
-
-
-
-
         <service android:name="com.parse.PushService" />
-        <receiver android:name="com.parse.ParseBroadcastReceiver">
+
+        <receiver android:name="com.parse.ParseBroadcastReceiver" >
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
                 <action android:name="android.intent.action.USER_PRESENT" />
             </intent-filter>
         </receiver>
-        <receiver android:name="com.parse.ParsePushBroadcastReceiver"
-                  android:exported="false">
+        <receiver
+            android:name="com.parse.ParsePushBroadcastReceiver"
+            android:exported="false" >
             <intent-filter>
                 <action android:name="com.parse.push.intent.RECEIVE" />
                 <action android:name="com.parse.push.intent.DELETE" />
                 <action android:name="com.parse.push.intent.OPEN" />
             </intent-filter>
         </receiver>
-        <receiver android:name="com.parse.GcmBroadcastReceiver"
-                  android:permission="com.google.android.c2dm.permission.SEND">
+        <receiver
+            android:name="com.parse.GcmBroadcastReceiver"
+            android:permission="com.google.android.c2dm.permission.SEND" >
             <intent-filter>
                 <action android:name="com.google.android.c2dm.intent.RECEIVE" />
                 <action android:name="com.google.android.c2dm.intent.REGISTRATION" />
 
-                <!--
-                  IMPORTANT: Change "com.parse.starter" to match your app's package name.
-                -->
+                <!-- IMPORTANT: Change "com.parse.starter" to match your app's package name. -->
                 <category android:name="com.xjlm.albertbroadcast" />
             </intent-filter>
         </receiver>
 
+        <activity
+            android:name=".SettingsActivity"
+            android:label="@string/title_activity_settings" >
+        </activity>
+        <activity
+            android:name=".PointOfSaleActivity"
+            android:label="@string/title_activity_point_of_sale" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
 
-
-
-
-
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
     </application>
 
 </manifest>
