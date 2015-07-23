@@ -9,6 +9,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import com.aevi.helpers.services.AeviServiceConnectionCallback;
 import com.aevi.led.LedPhase;
@@ -16,6 +17,7 @@ import com.aevi.led.LedSequenceParams;
 import com.aevi.led.LedService;
 import com.aevi.led.LedServiceProvider;
 import com.aevi.payment.PaymentRequest;
+import com.aevi.payment.TransactionResult;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -28,7 +30,7 @@ import au.com.commbank.albert.merchantmenu.events.OnMerchantMenuEventListener;
 import au.com.commbank.albert.merchantmenu.events.OnMerchantMenuItemClickListener;
 
 
-public class PointOfSaleActivity extends ActionBarActivity implements OnMerchantMenuEventListener, OnMerchantMenuItemClickListener {
+public class PointOfSaleActivity extends ActionBarActivity {
 
   EditText g_payAmount;
 
@@ -47,37 +49,6 @@ public class PointOfSaleActivity extends ActionBarActivity implements OnMerchant
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_point_of_sale);
-
-    //Initialise the merchant menu
-    if (savedInstanceState!= null
-        &&savedInstanceState
-        .containsKey(MerchantMenu.MERCHANT_MENU_BUNDLE_KEY)){
-      merchantMenu= new MerchantMenu(
-          this,
-          (MerchantMenuBundle)savedInstanceState
-              .getParcelable(MerchantMenu.MERCHANT_MENU_BUNDLE_KEY));
-    } else {
-      merchantMenu = new MerchantMenu(this);
-    }
-
-    //Setup LEDs
-    ledServiceProvider= new LedServiceProvider(this);
-    ledPhases= new LedPhase[NUM_PHASES];
-    for (int i= 0; i < NUM_PHASES; ) {
-      ledPhases[i++]= new LedPhase(Color.TRANSPARENT, TRANSPARENT_RATE);
-      ledPhases[i++]= new LedPhase(Color.RED, RED_RATE);
-    }
-    ledSequenceParams= new LedSequenceParams(false, true);
-
-    ledServiceProvider.connect(new AeviServiceConnectionCallback<LedService>(){
-      @Override
-      public void onConnect(LedService service) {
-        ledService= service;
-      }
-    });
-
-    merchantMenu.setOnMerchantMenuEventListener(this);
-    MerchantMenuItem item = merchantMenu.addMerchantMenuItem("Go To Broadcast", R.id.image, 1);
   }
 
   @Override
@@ -123,14 +94,14 @@ public class PointOfSaleActivity extends ActionBarActivity implements OnMerchant
     // Launch the Payment app.
     startActivityForResult(payment.createIntent(), 0);
   }
-//
-//  @Override
-//  protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-//    // Obtain the transaction result from the returned data.
-//    TransactionResult result = TransactionResult.fromIntent(data);
-//    // Use a toast to show the transaction result.
-//    Toast.makeText(this,"Transaction result: " + result.getTransactionStatus(), Toast.LENGTH_LONG).show();
-//  }
+
+  @Override
+  protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+    // Obtain the transaction result from the returned data.
+    TransactionResult result = TransactionResult.fromIntent(data);
+    // Use a toast to show the transaction result.
+    Toast.makeText(this, "Transaction result: " + result.getTransactionStatus(), Toast.LENGTH_LONG).show();
+  }
 
   // CALLBACK: CASH BUTTON CLICK
   public void onCashButtonClick(View view) {
@@ -145,39 +116,5 @@ public class PointOfSaleActivity extends ActionBarActivity implements OnMerchant
 
 
   //=================MERCHANT MENU SECTION
-  @Override
-  protected  void  onDestroy(){
-    merchantMenu.unregisterMerchantMenu();
-    super.onDestroy();
-  }
 
-  public boolean onKeyDown(int keyCode, KeyEvent event) {
-    if ((keyCode == KeyEvent.KEYCODE_MENU)
-        && event.getAction() == KeyEvent.ACTION_DOWN) {
-      merchantMenu.requestMerchantMenu();
-      return true;
-    }
-    return super.onKeyDown(keyCode, event);
-  }
-
-  @Override
-  protected void onSaveInstanceState(Bundle outState) {
-    outState.putParcelable(MerchantMenu.MERCHANT_MENU_BUNDLE_KEY,
-        merchantMenu.getMerchantMenuState());
-    super.onSaveInstanceState(outState);
-  }
-
-  @Override
-  public void onMerchantMenuOpened(){
-    ledService.setLedSequence(ledPhases,ledSequenceParams);
-  }
-  @Override
-  public void onMerchantMenuClosed(){
-    ledService.cancel();
-  }
-
-  @Override
-  public void onMerchantMenuItemClicked(MerchantMenuItem menuItem){
-    //Respond here
-  }
 }

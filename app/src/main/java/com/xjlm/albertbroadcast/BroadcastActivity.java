@@ -44,7 +44,7 @@ import au.com.commbank.albert.merchantmenu.events.OnMerchantMenuEventListener;
 import au.com.commbank.albert.merchantmenu.events.OnMerchantMenuItemClickListener;
 
 
-public class BroadcastActivity extends ActionBarActivity implements View.OnClickListener, EditText.OnEditorActionListener, OnMerchantMenuEventListener, OnMerchantMenuItemClickListener {
+public class BroadcastActivity extends ActionBarActivity implements View.OnClickListener, EditText.OnEditorActionListener {
 
   Button broadcastButton;
   EditText broadcastEditText;
@@ -62,14 +62,7 @@ public class BroadcastActivity extends ActionBarActivity implements View.OnClick
   Boolean tw_tog = false;
 
   // MERCHANT MENU
-  private MerchantMenu merchantMenu;
-  private LedService ledService;
-  private LedServiceProvider ledServiceProvider;
-  private LedSequenceParams ledSequenceParams;
-  private LedPhase[] ledPhases;
-  private final int TRANSPARENT_RATE= 200;
-  private final int RED_RATE= 333;
-  private final int NUM_PHASES= 8;
+
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -77,36 +70,6 @@ public class BroadcastActivity extends ActionBarActivity implements View.OnClick
     setContentView(R.layout.activity_broadcast);
 
     //Initialise the merchant menu
-    if (savedInstanceState!= null
-        &&savedInstanceState
-        .containsKey(MerchantMenu.MERCHANT_MENU_BUNDLE_KEY)){
-      merchantMenu= new MerchantMenu(
-          this,
-          (MerchantMenuBundle)savedInstanceState
-              .getParcelable(MerchantMenu.MERCHANT_MENU_BUNDLE_KEY));
-    } else {
-      merchantMenu = new MerchantMenu(this);
-    }
-    //Setup LEDs
-    ledServiceProvider= new LedServiceProvider(this);
-    ledPhases= new LedPhase[NUM_PHASES];
-    for (int i= 0; i < NUM_PHASES; ) {
-      ledPhases[i++]= new LedPhase(Color.TRANSPARENT, TRANSPARENT_RATE);
-      ledPhases[i++]= new LedPhase(Color.RED, RED_RATE);
-    }
-    ledSequenceParams= new LedSequenceParams(false, true);
-
-    ledServiceProvider.connect(new AeviServiceConnectionCallback<LedService>(){
-      @Override
-      public void onConnect(LedService service) {
-        ledService= service;
-      }
-    });
-
-    merchantMenu.setOnMerchantMenuEventListener(this);
-
-
-
 
 
 
@@ -308,39 +271,5 @@ public class BroadcastActivity extends ActionBarActivity implements View.OnClick
 
 
   //=================MERCHANT MENU SECTION
-  @Override
-  protected  void  onDestroy(){
-    merchantMenu.unregisterMerchantMenu();
-    super.onDestroy();
-  }
 
-  public boolean onKeyDown(int keyCode, KeyEvent event) {
-    if ((keyCode == KeyEvent.KEYCODE_MENU)
-        && event.getAction() == KeyEvent.ACTION_DOWN) {
-      merchantMenu.requestMerchantMenu();
-      return true;
-    }
-    return super.onKeyDown(keyCode, event);
-  }
-
-  @Override
-  protected void onSaveInstanceState(Bundle outState) {
-    outState.putParcelable(MerchantMenu.MERCHANT_MENU_BUNDLE_KEY,
-        merchantMenu.getMerchantMenuState());
-    super.onSaveInstanceState(outState);
-  }
-
-  @Override
-  public void onMerchantMenuOpened(){
-    ledService.setLedSequence(ledPhases, ledSequenceParams);
-  }
-  @Override
-  public void onMerchantMenuClosed(){
-    ledService.cancel();
-  }
-
-  @Override
-  public void onMerchantMenuItemClicked(MerchantMenuItem menuItem){
-    //Respond here
-  }
 }
