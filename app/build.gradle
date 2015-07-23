@@ -78,7 +78,7 @@ afterEvaluate {
       task("runAlbertStaging", type: Exec, dependsOn: "installAlbertStaging") {
         description = 'Run APK on Albert'
         group = 'Albert'
-        commandLine "$adbPath", "shell", "am", "start", "-n", "com.xjlm.albertbroadcast/com.xjlm.albertbroadcast.MainActivity"
+        commandLine "$adbPath", "shell", "am", "start", "-n", "com.xjlm.albertbroadcast/com.xjlm.albertbroadcast.BroadcastActivity"
       }
 
       variant.outputsAreSigned = true

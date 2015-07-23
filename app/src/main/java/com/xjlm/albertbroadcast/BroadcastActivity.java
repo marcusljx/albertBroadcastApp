@@ -27,7 +27,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 
 
-public class MainActivity extends ActionBarActivity implements View.OnClickListener, EditText.OnEditorActionListener {
+public class BroadcastActivity extends ActionBarActivity implements View.OnClickListener, EditText.OnEditorActionListener {
 
   Button broadcastButton;
   EditText broadcastEditText;
@@ -46,7 +46,7 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
-    setContentView(R.layout.activity_main);
+    setContentView(R.layout.activity_broadcast);
 
     //Listen to store id edittext field
     storeID_EditText = (EditText) findViewById(R.id.edittext_store_id);

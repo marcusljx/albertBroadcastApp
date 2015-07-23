@@ -1,16 +1,76 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                xmlns:tools="http://schemas.android.com/tools"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:paddingLeft="@dimen/activity_horizontal_margin"
-                android:paddingRight="@dimen/activity_horizontal_margin"
-                android:paddingTop="@dimen/activity_vertical_margin"
-                android:paddingBottom="@dimen/activity_vertical_margin"
-                tools:context="com.xjlm.albertbroadcast.PointOfSaleActivity">
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              xmlns:tools="http://schemas.android.com/tools"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:orientation="vertical"
+              tools:context=".FullscreenActivity">
+
 
   <TextView
-      android:text="@string/hello_world"
+      android:id="@+id/fullscreen_content"
       android:layout_width="wrap_content"
-      android:layout_height="wrap_content"/>
+      android:layout_height="wrap_content"
+      android:textSize="40sp"
+      android:layout_gravity="center"
+      android:layout_marginTop="20dp"
+      android:text="@string/title_payment_summary"
+      />
 
-</RelativeLayout>
+  <!-- 1st bar -->
+  <LinearLayout
+      android:layout_width="match_parent"
+      android:layout_height="match_parent"
+      android:layout_weight="1"
+      >
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="@string/static_amount_dollars"
+        android:layout_gravity="center"
+        android:textSize="50sp"
+        android:layout_marginLeft="20dp"
+        />
+    <EditText
+        android:hint="amt"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:id="@+id/pay_amount"
+        android:layout_weight="1"
+        android:layout_gravity="center"
+        android:textSize="50sp"
+        android:inputType="numberDecimal"
+        android:layout_marginRight="20dp"
+        />
+
+  </LinearLayout>
+
+
+  <LinearLayout
+      android:layout_width="match_parent"
+      android:layout_height="match_parent"
+      android:layout_weight="1"
+      >
+
+    <Button
+        android:id="@+id/button_payCash"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_weight="1"
+        android:text="@string/button_pay_cash"
+        android:onClick="onCashButtonClick"
+        />
+
+    <Button
+        android:id="@+id/button_payAlbert"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_weight="1"
+        android:text="@string/button_pay_albert"
+        android:onClick="onAlbertPayButtonClick"
+        />
+
+  </LinearLayout>
+</LinearLayout>
