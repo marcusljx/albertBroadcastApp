@@ -34,7 +34,7 @@
     <application
         android:name=".ParseApplication"
         android:allowBackup="true"
-        android:icon="@mipmap/ic_launcher"
+        android:icon="@mipmap/pop_icon"
         android:label="@string/title_activity_point_of_sale"
         android:theme="@style/AppTheme" >
 

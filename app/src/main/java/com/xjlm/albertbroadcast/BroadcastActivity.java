@@ -85,7 +85,6 @@ public class BroadcastActivity extends ActionBarActivity implements View.OnClick
     mArrayAdapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1, mNameList);
     // set the ListView to use the ArrayAdapter
     mainListView.setAdapter(mArrayAdapter);
-
   }
 
   @Override
