@@ -1,5 +1,6 @@
 package com.xjlm.albertbroadcast;
 
+import android.content.Intent;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Menu;
@@ -78,5 +79,11 @@ public class PointOfSaleActivity extends ActionBarActivity {
 
   // CALLBACK: CASH BUTTON CLICK
   public void onCashButtonClick(View view) {
+  }
+
+  // GOTO Activity
+  public void goto_broadcast(MenuItem mi) {
+    Intent intent = new Intent(this, BroadcastActivity.class);
+    startActivity(intent);
   }
 }

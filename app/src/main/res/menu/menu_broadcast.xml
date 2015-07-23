@@ -14,7 +14,8 @@
           android:id="@+id/menu_goto_POS"
           android:title="@string/static_goto_POS"
           android:orderInCategory="100"
-          app:showAsAction="always"
+          app:showAsAction="ifRoom"
+          android:onClick="goto_pos"
           />
 
 </menu>

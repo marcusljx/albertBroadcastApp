@@ -50,7 +50,7 @@
 
         <activity
             android:name=".PointOfSaleActivity"
-            android:label="@string/title_activity_point_of_sale" >
+            android:label="@string/app_title" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />

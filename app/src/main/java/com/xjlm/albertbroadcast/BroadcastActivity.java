@@ -1,5 +1,6 @@
 package com.xjlm.albertbroadcast;
 
+import android.content.Intent;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -180,5 +181,11 @@ public class BroadcastActivity extends ActionBarActivity implements View.OnClick
 
 
     return false;
+  }
+
+  // GOTO Activity
+  public void goto_pos(MenuItem mi) {
+    Intent intent = new Intent(this, PointOfSaleActivity.class);
+    startActivity(intent);
   }
 }
