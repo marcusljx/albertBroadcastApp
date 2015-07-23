@@ -15,6 +15,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.parse.GetCallback;
+import com.parse.Parse;
 import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParsePush;
@@ -37,9 +38,6 @@ public class BroadcastActivity extends ActionBarActivity implements View.OnClick
   ArrayList mNameList = new ArrayList();
   ParseObject parse_agent;
 
-  // Parse Server Items
-  String StoreID = "xFrTor9FsW";
-
   EditText storeID_EditText;
   TextView storeName_TextView;
 
@@ -48,6 +46,24 @@ public class BroadcastActivity extends ActionBarActivity implements View.OnClick
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_broadcast);
+
+    // Retrieve Store Name
+    final String local_storeID = ((ParseApplication) this.getApplication()).get_StoreID();  // get from global
+    ParseQuery<ParseObject> query = ParseQuery.getQuery("Store");
+    query.getInBackground(local_storeID, new GetCallback<ParseObject>() {
+      public void done(ParseObject object, ParseException e) {
+        if (e == null) { //Success
+          String local_ShopName = object.getString("name");
+          storeName_TextView.setText("Store: " + local_ShopName);
+          storeID_EditText.setText("");
+        } else {
+          storeName_TextView.setText("ERROR: local_storeID not found. Broadcasts will not be delivered.");
+          Log.d("Parse", "Error attempting to check local_storeID");
+          storeID_EditText.setText(local_storeID);
+        }
+      }
+    });
+
 
     //Listen to store id edittext field
     storeID_EditText = (EditText) findViewById(R.id.edittext_store_id);
@@ -115,10 +131,10 @@ public class BroadcastActivity extends ActionBarActivity implements View.OnClick
       mArrayAdapter.notifyDataSetChanged();
 
 
-
+      final String local_storeID = ((ParseApplication) this.getApplication()).get_StoreID();  // get from global
       // Query Server for Store entry
       final ParseQuery<ParseObject> query = ParseQuery.getQuery("Store");
-      query.getInBackground(StoreID, new GetCallback<ParseObject>() {
+      query.getInBackground(local_storeID, new GetCallback<ParseObject>() {
         public void done(ParseObject object, ParseException e) {
           if (e == null) { //Success
             String ShopName = object.getString("name");
@@ -132,7 +148,7 @@ public class BroadcastActivity extends ActionBarActivity implements View.OnClick
             JSONObject notifObject = new JSONObject();
             try {
               notifObject.put("action", "ShopDetailsActivity");
-              notifObject.put("shop", StoreID);
+              notifObject.put("shop", local_storeID);
               notifObject.put("alert", broadcastMessage);
               notifObject.put("title", ShopName);
             } catch (JSONException je) {
@@ -162,19 +178,23 @@ public class BroadcastActivity extends ActionBarActivity implements View.OnClick
   @Override
   public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
     storeName_TextView.setText("Searching Database...");
-    StoreID = storeID_EditText.getText().toString();
+
+    // Set on Global Store ID
+    final String local_storeID = storeID_EditText.getText().toString();
+    ((ParseApplication) this.getApplication()).set_StoreID(local_storeID);
+
 
     ParseQuery<ParseObject> query = ParseQuery.getQuery("Store");
-    query.getInBackground(StoreID, new GetCallback<ParseObject>() {
+    query.getInBackground(local_storeID, new GetCallback<ParseObject>() {
       public void done(ParseObject object, ParseException e) {
         if (e == null) { //Success
-          String ShopName = object.getString("name");
-          storeName_TextView.setText("Store: " + ShopName);
+          String local_ShopName = object.getString("name");
+          storeName_TextView.setText("Store: " + local_ShopName);
           storeID_EditText.setText("");
         } else {
-          storeName_TextView.setText("ERROR: StoreID not found. Broadcasts will not be delivered.");
-          Log.d("Parse", "Error attempting to check StoreID");
-          storeID_EditText.setText(StoreID);
+          storeName_TextView.setText("ERROR: local_storeID not found. Broadcasts will not be delivered.");
+          Log.d("Parse", "Error attempting to check local_storeID");
+          storeID_EditText.setText(local_storeID);
         }
       }
     });

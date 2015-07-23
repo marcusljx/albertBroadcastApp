@@ -14,6 +14,25 @@ import com.parse.ParseObject;
  */
 public class ParseApplication extends Application {
 
+  // Global Variable - Store ID
+  private String g_StoreID = "xFrTor9FsW";
+  public String get_StoreID() {
+    return g_StoreID;
+  }
+  public void set_StoreID(String text) {
+    this.g_StoreID = text;
+  }
+
+  // Global Variable - Store Name
+  private String g_StoreName = "Cheap As Chips";
+  public String get_StoreName() {
+    return g_StoreName;
+  }
+  public void set_StoreName(String text) {
+    this.g_StoreName = text;
+  }
+
+
   String AppID = "hZxPSnEIyoluaOtpj8BXidFbNCJhV5B5MHY91zIW";
   String ClientID = "pp6BQ7rivLT0cAvMiaybEs1sYSv8ju9kQ9KPRBex";
 
