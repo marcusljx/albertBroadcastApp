@@ -1,6 +1,8 @@
 package com.xjlm.albertbroadcast;
 
 import android.content.Intent;
+import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -11,6 +13,7 @@ import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -40,6 +43,11 @@ public class BroadcastActivity extends ActionBarActivity implements View.OnClick
 
   EditText storeID_EditText;
   TextView storeName_TextView;
+
+  // Social buttons toggles
+  Boolean fb_tog = false;
+  Boolean ig_tog = false;
+  Boolean tw_tog = false;
 
 
   @Override
@@ -206,5 +214,39 @@ public class BroadcastActivity extends ActionBarActivity implements View.OnClick
   public void goto_pos(MenuItem mi) {
     Intent intent = new Intent(this, PointOfSaleActivity.class);
     startActivity(intent);
+  }
+
+  // Social Media Buttons
+  public void toggleFBButton(View view) {
+    ImageButton fbButton = (ImageButton) findViewById(R.id.socialButton_fb);
+    ColorDrawable current_color = (ColorDrawable) fbButton.getBackground();
+    int colorID = current_color.getColor();
+    if(fb_tog == false) {
+      fbButton.setBackgroundColor(getResources().getColor(R.color.pop));
+      fb_tog = true;
+    } else {
+      fbButton.setBackgroundColor(getResources().getColor(R.color.grey));
+      fb_tog = false;
+    }
+  }
+  public void toggleIGButton(View view) {
+    ImageButton igButton = (ImageButton) findViewById(R.id.socialButton_ig);
+
+    if(ig_tog == false) {
+      igButton.setBackgroundColor(getResources().getColor(R.color.pop));
+      ig_tog = true;
+    } else {
+      igButton.setBackgroundColor(getResources().getColor(R.color.grey));
+    }
+  }
+  public void toggleTWButton(View view) {
+    ImageButton twButton = (ImageButton) findViewById(R.id.socialButton_tw);
+    if(tw_tog == false) {
+      twButton.setBackgroundColor(getResources().getColor(R.color.pop));
+      tw_tog = true;
+    } else {
+      twButton.setBackgroundColor(getResources().getColor(R.color.grey));
+      tw_tog = false;
+    }
   }
 }
